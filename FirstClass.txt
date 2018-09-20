@@ -1,0 +1,16 @@
+Data Minings - eecs 6412
+
+Discover relevant information - characterization
+Predict future data income - regression
+
+base 0 - basic rules of probability
+Data mining: Concepts and Techniques, Morgan Kaufmann
+
+Assignments - 25%
+Paper review and presentation - 10%
+Project - 25%
+Final exam - 30%
+Participation - 10%
+
+
+Office hours - Mondays 1-2
