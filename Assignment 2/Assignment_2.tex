@@ -1,0 +1,224 @@
+\documentclass[a4paper]{article}
+
+\usepackage{fullpage} % Package to use full page
+\usepackage{parskip} % Package to tweak paragraph skipping
+\usepackage{tikz} % Package for drawing
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{qtree}
+\usepackage{textcomp}
+\usepackage{outlines}
+\usepackage{forest,adjustbox}
+\usepackage{graphicx}
+\newcommand{\minus}{\scalebox{0.75}[1.0]{$-$}}
+
+\newcommand*{\mybox}[1]{\framebox{#1}}
+
+\graphicspath{ {./images/} }
+
+\title{Assignment 2 EECS 6412}
+\author{Daniel Marchena Parreira}
+\date{2018/10/16}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question 1}
+
+To find all sequential patterns that do not only satisfy a minimum support min-sup, but also start with \{a\} and end with \{b\}, we can use the PrefixSpan algorithm multiple times. Having said that, we should first run PrefixSpan to find all sequential patterns with \{a\} considering a list of elements ordered alphabetically:
+
+Example:
+\newline
+Sequence: \textless a(abc)(ac)d(cf)\textgreater
+\newline
+min-sup-count = 2
+\newline
+
+\begin{description}
+    \item[$\bullet$ Step 1] Find length-1 sequential patterns
+    \begin{outline}
+      \begin{description}
+        \item[$\bullet$] In our case we will look for a single item \textless a\textgreater
+      \end{description}
+    \end{outline}
+
+    \item[$\bullet$ Step 2] Divide search space. The complete set of freq. seq. can be partitioned into 1 subset:
+    \begin{outline}
+      \begin{description}
+        \item[$\bullet$] The ones having prefix \textless a\textgreater
+      \end{description}
+    \end{outline}
+
+    \item[$\bullet$ Step 3] Run \textless a\textgreater-projected database:
+
+    \textless (abc)(ac)d(cf)\textgreater,
+    \textless (\_d)c(bc)(ae)\textgreater,
+    \textless (\_b)(df)cb\textgreater,
+    \textless (\_f)cbc\textgreater
+
+    \item[$\bullet$ Step 4] To filter for ending \textless b\textgreater sequential patterns, we will analyze the sequences from the \textless a\textgreater-projected database from end to beginning. On that note, first we will remove any itemsets that contain more than one item in those sequences.
+
+    \item[$\bullet$ Step 5] After cleaning those itemsets we run Step 1 to 3 again on those sequences. The output will be sequences starting with \{a\} and ending with \{b\}.
+
+\end{description}
+
+
+\maketitle
+
+\section*{Question 2}
+a)
+\newline
+Number of distinct classes (m) = 2 (either + or -)
+\newline
+C1 = + (4 tuples)
+\newline
+C2 = - (6 tuples)
+
+A (root) node N is created for the tuples in D. To find the splitting criterion for these tuples, we must compute the information gain of each attribute.
+
+\begin{description}
+    \item[$\bullet$ Step 1] We first use the database to compute the expected information needed to classify a tuple in D:
+
+
+    \[ Info(D)
+      = - \dfrac{4}{10} \log _{2} \left(\dfrac{4}{10}\right) - \dfrac{6}{10} \log _{2} \left(\dfrac{6}{10}\right) = 0.970_{bits}
+    \]
+    \newpage
+    \item[$\bullet$ Step 2] Next, we need to compute the expected information requirement for each attribute. Let’s start with the attribute A. We need to look at the distribution of + and - tuples for each category of A (T or F):
+
+    \[ Info_A(D)
+      = \dfrac{7}{10} \left(-\dfrac{4}{7} \log _{2} \dfrac{4}{7} - \dfrac{3}{7} \log _{2} \dfrac{3}{7} \right) +
+      \dfrac{3}{10} \left(-\dfrac{3}{3} \log _{2} \dfrac{3}{3}\right)
+      = 0.689 _{bits}
+    \]
+
+
+    \item[$\bullet$ Step 3] Calculate the gain for such a partitioning would be:
+
+     \[ Gain(A)
+      = Info(D) - Info_A(D) = 0.970 - 0.689 = 0.281 bits
+    \]
+
+    \item[$\bullet$ Step 4]  We need to look at the distribution of + and - tuples for each category of B (T or F):
+
+    \[ Info_B(D)
+      = \dfrac{4}{10} \left(-\dfrac{3}{4} \log _{2} \dfrac{3}{4} - \dfrac{1}{4} \log _{2} \dfrac{1}{4}\right) +
+      \dfrac{6}{10} \left(-\dfrac{1}{6} \log _{2} \dfrac{1}{6} - \dfrac{5}{6} \log _{2} \dfrac{5}{6}\right)
+      = 0.714_{bits}
+    \]
+
+    \item[$\bullet$ Step 5]  Calculate the gain for such a partitioning would be:
+
+    \[ Gain(B)
+      = Info(D) - Info_A(D) = 0.970 - 0.714 = 0.256 bits
+    \]
+
+    Because A has the highest information gain among the attributes, it is selected as the splitting attribute. Node N is labeled with A, and branches are grown for each of the attribute’s values.
+
+\end{description}
+
+b)
+\newline
+The Gini index is used in CART. Using the notation previously described, the Gini index measures the impurity of D.
+
+\begin{description}
+    \item[$\bullet$ Step 1] We first use the Database for the Gini index to compute the impurity of D:
+    \[ Gini(D)
+      = 1 - \left(\dfrac{4}{10}\right)^2 - \left(\dfrac{6}{10}\right)^2 = 0.480
+    \]
+
+    \item[$\bullet$ Step 2] To find the splitting criterion for the tuples in D, we need to compute the Gini index for each attribute. Let's start with A:
+    \begin{equation}
+    \begin{split}
+    &Gini_{A\in \{T\}}(D) = \dfrac{7}{10}Gini(D_1) + \dfrac{3}{10}Gini(D_2) \\
+      &= \dfrac{7}{10} ( 1 - \left(\dfrac{4}{7}\right)^2 - \left(\dfrac{3}{7}\right)^2) + \dfrac{3}{10}(1 - \left(\dfrac{3}{3}\right)^2)
+      = 0.342 \\ &= Gini_{A\in \{F\}}(D)
+    \end{split}
+    \end{equation}
+
+    \item[$\bullet$ Step 3] Let's compute the Gini index for B:
+    \begin{equation}
+    \begin{split}
+    &Gini_{B\in \{T\}}(D) = \dfrac{4}{10}Gini(D_1) + \dfrac{6}{10}Gini(D_2) \\
+      &= \dfrac{4}{10} ( 1 - \left(\dfrac{3}{4}\right)^2 - \left(\dfrac{1}{4}\right)^2) + \dfrac{6}{10}(1 - \left(\dfrac{1}{6}\right)^2 - \left(\dfrac{5}{6}\right)^2)
+      = 0.316 \\ &= Gini_{B\in \{F\}}(D)
+    \end{split}
+    \end{equation}
+
+    \item[$\bullet$ Step 4] The attribute B and splitting subset \{T\} therefore give the minimum Gini index overall, with a reduction in impurity of 0.480 - 0.316 = 0.164.  The binary split $"B\in \{T?\}"$ results in the maximum reduction in impurity of the tuples in D and is returned as the splitting criterion. Node N is labeled with the criterion, two branches are grown from it, and the tuples are partitioned accordingly.
+
+\end{description}
+
+\maketitle
+
+\section*{Question 3}
+
+1)
+\newline
+From the 5 tuples available in the pruning set, the decision three got 2 tuples correctly classified and 3 incorrectly classified. That leaves us to an error rate of 60\%.
+\newline
+\newline
+2)
+\newline
+\begin{description}
+    \item[$\bullet$ Step 1] Consider each of the internal non-root nodes in the tree to be candidates for pruning
+
+    \item[$\bullet$ Step 2] Prune a node by removing subtree rooted at this node, making it a leaf node, and assigning it the most common classification of the training examples affiliated with this node
+
+    \begin{forest}
+    for tree={circle, draw, l sep=20pt}
+    [A$_{(6+, 6-)}$,
+        [B$_{(3+, 2-)}$, edge label={node[midway,left] {0}}
+          [+, edge label={node[midway,left] {0}}, edge+={->}]
+          [C$_{(1+, 2-)}$, red, edge label={node[midway,right] {1}}
+            [+, edge label={node[midway,left] {0}}, edge+={->}]
+            [$\minus$, edge label={node[midway,right] {1}}, edge+={->}]
+          ]
+        ]
+        [B$_{(3+, 4-)}$, edge label={node[midway,right] {1}}
+          [+, edge label={node[midway,left] {0}}, edge+={->}]
+          [$\minus$, edge label={node[midway,right] {1}}, edge+={->}]
+      ]
+    ]
+    \end{forest}
+
+    \item[$\bullet$ Step 3] We will start from the bottom of the tree and prune C$_{(1+, 2-)}$ making it a leaf node for +. However, that will make both outcomes of B$_{(3+, 2-)}$ to be equal to +, so as a matter visual simplicity we will also prune that to simplify our tree.
+
+    \begin{forest}
+    for tree={circle, draw, l sep=20pt}
+    [, phantom, s sep = 1cm
+        [A$_{(6+, 6-)}$,
+            [B$_{(3+, 2-)}$, edge label={node[midway,left] {0}}
+              [+, edge label={node[midway,left] {0}}, edge+={->}]
+              [+, edge label={node[midway,right] {1}}, edge+={->}]
+            ]
+            [B$_{(3+, 4-)}$, edge label={node[midway,right] {1}}
+              [+, edge label={node[midway,left] {0}}, edge+={->}]
+              [$\minus$, edge label={node[midway,right] {1}}, edge+={->}]
+          ]
+        ]
+        [A$_{(6+, 6-)}$,
+            [+, edge label={node[midway,left] {0}}]
+            [B$_{(3+, 4-)}$, edge label={node[midway,right] {1}}
+              [+, edge label={node[midway,left] {0}}, edge+={->}]
+              [$\minus$, edge label={node[midway,right] {1}}, edge+={->}]
+          ]
+        ]
+    ]
+    \end{forest}
+
+
+  This will leave us with an error rate of 40\% by running the pruning set. That gives us a reduction of the error rate by 20\% compared to our unpruned tree. Now we can greedily remove those nodes from our decision tree.
+
+\maketitle
+
+\section*{Question 4}
+
+Attached as requested
+
+
+\end{description}
+
+\end{document}
