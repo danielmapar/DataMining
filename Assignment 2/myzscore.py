@@ -49,9 +49,6 @@ for col_index in range(num_cols):
 
 normalized_tuples = zip(*normalized_tuples)
 
-print("Normalized tuples: ")
-[print(normalized_tuple) for normalized_tuple in normalized_tuples]
-
 with open('output.txt', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter='\t')
     writer.writerows(normalized_tuples)
